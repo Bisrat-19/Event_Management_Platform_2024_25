@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Reports</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/event_report.css">
 </head>
 
 <body>
@@ -12,10 +14,10 @@
         &#8592; Back
     </a>
 
-    <div>
-        <h2>Event Reports</h2>
+    <div class="container">
+        <h2 class="text-center my-4">Event Reports</h2>
 
-        <table>
+        <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -33,26 +35,27 @@
             <h3>Update Event</h3>
             <form id="update-event-form">
                 <input type="hidden" id="update-event-id">
-                <div>
-                    <label for="update-event-title">Title</label>
-                    <input type="text" id="update-event-title">
+                <div class="mb-3">
+                    <label for="update-event-title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="update-event-title">
                 </div>
-                <div>
-                    <label for="update-event-description">Description</label>
-                    <textarea id="update-event-description"></textarea>
+                <div class="mb-3">
+                    <label for="update-event-description" class="form-label">Description</label>
+                    <textarea class="form-control" id="update-event-description"></textarea>
                 </div>
-                <div>
-                    <label for="update-event-date">Date</label>
-                    <input type="datetime-local" id="update-event-date">
+                <div class="mb-3">
+                    <label for="update-event-date" class="form-label">Date</label>
+                    <input type="datetime-local" class="form-control" id="update-event-date">
                 </div>
-                <div>
-                    <label for="update-event-location">Location</label>
-                    <input type="text" id="update-event-location">
+                <div class="mb-3">
+                    <label for="update-event-location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="update-event-location">
                 </div>
-                <button type="button" onclick="submitUpdateEvent()">Update Event</button>
+                <button type="button" class="btn btn-primary" onclick="submitUpdateEvent()">Update Event</button>
             </form>
         </div>
     </div>
+
 
 </body>
 
