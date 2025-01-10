@@ -1,40 +1,35 @@
+const API_BASE_URL = 'http://localhost:3000/users';
+
+// Fetch token from localStorage
+function getAuthtoken(): string {
+    return `Bearer ${localStorage.getItem('access_token')}`;
+}
+
+// Define User interface
 interface User {
     name: string;
     email: string;
 }
 
-const mockUsers: User[] = [
-    { name: "John Doe", email: "john@example.com" },
-    { name: "Jane Smith", email: "jane@example.com" },
-    { name: "Alice Johnson", email: "alice@example.com" },
-    // Add more mock users as needed
-];
-
-// Fetch token from localStorage
-function getAuthToken(): string {
-    return `Bearer ${localStorage.getItem('access_token') || ''}`;
-}
-
 function fetchUsers(): void {
-    // Simulate fetching users with mock data
-    const accessToken = localStorage.getItem('access_token');
-
-    if (!accessToken) {
-        console.error('No access token found.');
-        return;
-    }
-
-    // Simulate asynchronous data fetching
-    setTimeout(() => {
-        const tableBody = document.getElementById('users-table-body') as HTMLTableSectionElement;
-        if (!tableBody) {
-            console.error('Table body not found.');
-            return;
+    fetch(API_BASE_URL, {
+        method: 'GET',
+        headers: {
+            'Accept': '*/*',
+            'Authorization': getAuthToken()
         }
-
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch users');
+        }
+        return response.json() as Promise<User[]>;
+    })
+    .then(users => {
+        const tableBody = document.getElementById('users-table-body') as HTMLElement;
         tableBody.innerHTML = '';
 
-        mockUsers.forEach(user => {
+        users.forEach(user => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${user.name}</td>
@@ -43,7 +38,8 @@ function fetchUsers(): void {
 
             tableBody.appendChild(row);
         });
-    }, 500); // Simulating network delay
+    })
+    .catch(error => console.error('Error fetching users:', error));
 }
 
 document.addEventListener('DOMContentLoaded', fetchUsers);

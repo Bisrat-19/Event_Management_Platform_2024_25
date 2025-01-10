@@ -1,35 +1,48 @@
 document.getElementById("signupForm").addEventListener("submit", async (e) => {
-    e.preventDefault(); // Prevent the form from submitting the traditional way
+     e.preventDefault(); // Prevent the form from submitting the traditional way
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("create-password").value;
-    const confirmPassword = document.getElementById("confirm-password").value;
-    const signupMessage = document.getElementById("signupMessage");
+     const name = document.getElementById("name").value;
+     const email = document.getElementById("email").value;
+     const password = document.getElementById("create-password").value;
+     const confirmPassword = document.getElementById("confirm-password").value;
+     const signupMessage = document.getElementById("signupMessage");
 
-    // Clear previous messages
-    signupMessage.textContent = "";
+     // Clear previous messages
+     signupMessage.textContent = "";
 
-    // Check if passwords match
-    if (password !== confirmPassword) {
-        signupMessage.textContent = "Passwords do not match.";
-        return;
-    }
+     // Check if passwords match
+     if (password !== confirmPassword) {
+         signupMessage.textContent = "Passwords do not match.";
+         return;
+     }
 
-    // Simulating registration process with mock data
-    const mockUserDatabase = []; // Simulated database
+     // Create request payload
+     const payload = {
+         name,
+         email,
+         password
+     };
 
-    // Simulate a delay for the registration process
-    setTimeout(() => {
-        // Check if user already exists
-        const userExists = mockUserDatabase.some(user => user.email === email);
-        
-        if (userExists) {
-            signupMessage.textContent = "Email is already registered.";
-        } else {
-            // Simulate saving the user to the "database"
-            mockUserDatabase.push({ name, email, password });
-            window.location.href = "/pages/login.html"; // Redirect to login page
-        }
-    }, 500); // Simulating network delay
-});
+     try {
+         const response = await fetch("http://localhost:3000/auth/register", {
+             method: "POST",
+             headers: {
+                 "Accept": "application/json",
+                 "Content-Type": "application/json"
+             },
+             body: JSON.stringify(payload)
+         });
+
+         if (response.ok) {
+             // On successful registration, redirect to login page
+             window.location.href = "/pages/login.html";
+         } else {
+             // Display error message if registration fails
+             const errorData = await response.json();
+             signupMessage.textContent = errorData.message || "Signup failed. Please try again.";
+         }
+     } catch (error) {
+         signupMessage.textContent = "An error occurred. Please try again.";
+         console.error("Signup error:", error);
+     }
+ });
