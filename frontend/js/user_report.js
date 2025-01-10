@@ -1,9 +1,4 @@
-const mockUsers = [
-    { name: "John Doe", email: "john@example.com" },
-    { name: "Jane Smith", email: "jane@example.com" },
-    { name: "Alice Johnson", email: "alice@example.com" },
-    // Add more mock users as needed
-];
+const API_BASE_URL = 'http://localhost:3000/users';
 
 // Fetch token from localStorage
 function getAuthToken() {
@@ -11,20 +6,24 @@ function getAuthToken() {
 }
 
 function fetchUsers() {
-    // Simulate fetching users with mock data
-    const accessToken = localStorage.getItem('access_token');
-
-    if (!accessToken) {
-        console.error('No access token found.');
-        return;
-    }
-
-    // Simulate asynchronous data fetching
-    setTimeout(() => {
+    fetch(API_BASE_URL, {
+        method: 'GET',
+        headers: {
+            'Accept': '*/*',
+            'Authorization': getAuthToken()
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch users');
+        }
+        return response.json();
+    })
+    .then(users => {
         const tableBody = document.getElementById('users-table-body');
         tableBody.innerHTML = '';
 
-        mockUsers.forEach(user => {
+        users.forEach(user => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${user.name}</td>
@@ -33,7 +32,8 @@ function fetchUsers() {
 
             tableBody.appendChild(row);
         });
-    }, 500); // Simulating network delay
+    })
+    .catch(error => console.error('Error fetching users:', error));
 }
 
 document.addEventListener('DOMContentLoaded', fetchUsers);

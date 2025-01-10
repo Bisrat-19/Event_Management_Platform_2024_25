@@ -1,24 +1,10 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const navItems = document.getElementById("nav-items") as HTMLElement;
     const eventsContainer = document.getElementById("events") as HTMLElement;
     const searchButton = document.querySelector(".btn-primary") as HTMLButtonElement;
     const searchInput = document.querySelector("input[placeholder='Search by name']") as HTMLInputElement;
-
-    // Sample data for events (mock data)
-    interface Event {
-        id: number;
-        title: string;
-        date: string;
-    }
-
-    const allEvents: Event[] = [
-        { id: 1, title: "Event 1", date: "2023-10-01" },
-        { id: 2, title: "Event 2", date: "2023-10-15" },
-        { id: 3, title: "Event 3", date: "2023-11-01" },
-        // Add more mock events as needed
-    ];
-
-    const user = JSON.parse(localStorage.getItem("user") || "null");
+    let allEvents: Event[] = []; // Store all events here
+    const user = JSON.parse(localStorage.getItem("user") || 'null') as { name: string } | null;
 
     // Populate navbar
     if (user) {
@@ -50,16 +36,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Logout functionality
-    const logoutBtn = document.getElementById("logout") as HTMLButtonElement;
+    const logoutBtn = document.getElementById("logout") as HTMLButtonElement | null;
     if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
             localStorage.removeItem("user");
+            localStorage.removeItem("access_token");
             window.location.reload();
         });
     }
 
-    // Display all events initially
-    displayEvents(allEvents);
+    // Fetch and display events
+    try {
+        const response = await fetch("http://localhost:3000/events", {
+            method: "GET",
+            headers: { Accept: "application/json" },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        allEvents = await response.json() as Event[]; // Store fetched events
+        displayEvents(allEvents); // Display all events initially
+    } catch (error) {
+        console.error("Error fetching events:", error);
+        eventsContainer.innerHTML = `<p class="text-danger">Failed to load events. Please try again later.</p>`;
+    }
 
     // Event listener for search functionality
     searchButton.addEventListener("click", () => {
@@ -91,5 +93,12 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
             eventsContainer.appendChild(eventCard);
         });
+    }
+
+    // Define Event interface
+    interface Event {
+        id: number;
+        title: string;
+        date: string;
     }
 });
